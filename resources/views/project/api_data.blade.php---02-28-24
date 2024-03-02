@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Data</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- Include the header -->
+    @include('project.header')
+    <br><br><br><br>
+
+    <div class="container">
+        <h3>Select the business you’d like to review</h3>
+        <hr>
+        <br>
+
+        <div class="col-md-6">
+            @if(Session::has('success'))
+            <div class="alert alert-success" role="alert">
+                {{Session::get('success')}}
+            </div>
+            @endif
+            @if(Session::has('error'))
+            <div class="alert alert-danger" role="alert">
+                {{Session::get('error')}}
+            </div>
+            @endif
+        </div>
+        <div class="row">
+            <!-- <div class="col-md-12">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe id="mapIframe" class="embed-responsive-item" frameborder="0" style="border:0;"
+                        allowfullscreen></iframe>
+                </div>
+
+                <script>
+                    var apiKey = 'AIzaSyAeIaTdMSWLzpCC5LaB_A4T503Aa7lM67I';
+                    var restaurantLocations = [];
+
+                    @foreach ($places as $place)
+                    restaurantLocations.push({
+                        lat: {{ $place['geometry']['location']['lat'] }},
+                        lng: {{ $place['geometry']['location']['lng'] }}
+                    });
+                    @endforeach
+
+                    var defaultLocation = restaurantLocations.length > 0 ? restaurantLocations[0] : {
+                        lat: 37.7749,
+                        lng: -122.4194
+                    };
+
+                    document.getElementById('mapIframe').src =
+                        "https://www.google.com/maps/embed/v1/place?q=" + defaultLocation.lat + "," +
+                        defaultLocation.lng + "&key=" + apiKey;
+                </script>
+            </div> -->
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAeIaTdMSWLzpCC5LaB_A4T503Aa7lM67I&callback=initMap" async defer></script>
+            <script>
+                function initMap() {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        center: { lat: 37.7749, lng: -122.4194 }, 
+                        zoom: 12
+                    });
+                    reviews.forEach(function(review) {
+                        var marker = new google.maps.Marker({
+                            position: { lat: parseFloat(review.latitude), lng: parseFloat(review.longitude) },
+                            map: map,
+                            title: review.title,
+                        });
+                    });
+                }
+            </script>
+
+            <div id="map" style="height: 400px; width: 100%;"></div>
+           
+        </div>
+        <br><br>
+        @foreach ($places as $place)
+        <a href="{{ route('single_api', ['place_id' => $place['place_id']]) }}" class="card-link"
+            style="color: black; text-decoration: none;">
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    @if (isset($place['photos'][0]['photo_reference']))
+                    <?php
+                            $photoReference = $place['photos'][0]['photo_reference'];
+                            $photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference={$photoReference}&key=AIzaSyAeIaTdMSWLzpCC5LaB_A4T503Aa7lM67I";
+                        ?>
+                    <img src="{{ $photoUrl }}" alt="{{ $place['name'] }} Photo" width="100%" height="220px;">
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h3>{{ $place['name'] }}</h3>
+                    <p>Rating: {{ $place['rating'] }}</p>
+                    <p>Vicinity: {{ $place['vicinity'] }}</p>
+                    <p>Latitude: {{ $place['geometry']['location']['lat'] }}</p>
+                    <p>Longitude: {{ $place['geometry']['location']['lng'] }}</p>
+                </div>
+            </div>
+        </a>
+        @endforeach
+        <div class="mt-4">
+            {{ $places->links('pagination::bootstrap-4') }}
+        </div>
+
+        
+    </div>
+    <br><br><br><br>
+    <footer style="background-color:#EEEEEE;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <br>
+                        <small> COPYRIGHT © 2024 EGGS BENEDICT NEAR ME - ALL RIGHTS RESERVED. </small>
+                    <br><br>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+                    <br>
+                    <small>POWERED BY MEDEX</small>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Add Bootstrap and jQuery JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
